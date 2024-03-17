@@ -1,3 +1,7 @@
+"""
+Contains auxiliary functions for structured and unstructured pruning.
+"""
+
 import numpy as np
 import torch
 import torch.nn as nn

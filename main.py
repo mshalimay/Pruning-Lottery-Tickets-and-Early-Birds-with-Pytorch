@@ -1,7 +1,6 @@
 from __future__ import print_function
 import argparse
 import os
-import sys
 import time
 import numpy as np
 import torch
@@ -10,16 +9,6 @@ from torch.optim.lr_scheduler import StepLR
 import utils.utils as u
 import models
 from prune import reinitialize_weights, unstruct_pruning, structured_pruning, reinit_network
-
-
-class Timer:
-    def __init__(self):
-        self.start_time = self.t0 = time.time()
-        self.elapsed = 0
-    def accumulate(self):
-        t = time.time()
-        self.elapsed += t - self.t0
-        self.t0 = t
 
 
 def parse_arguments():
@@ -44,8 +33,8 @@ def parse_arguments():
     parser.add_argument('--no-cuda', action='store_true', default=False,
                         help='disables CUDA training')
 
-    # parser.add_argument('--no-mps', action='store_true', default=False,
-    #                     help='disables macOS GPU training')
+    parser.add_argument('--no-mps', action='store_true', default=True,
+                        help='disables macOS GPU training')
 
     parser.add_argument('--dry-run', action='store_true', default=False,
                         help='quickly check a single pass')
@@ -125,22 +114,12 @@ def parse_arguments():
 
 def main():
     args = parse_arguments()
-    # args.load = 'auto'
-    # args.epochs = 1
-    # args.priter = 1
-    # args.pr = 0.9
-    # args.sched = 'manual'
-    # args.nw = 5
-    # args.save = True
-    # # args.reinit = 'init'
-    # args.prunety = 's'
-
     #===========================================================================
     # parse arguments and set up
     #===========================================================================
 
     use_cuda = not args.no_cuda and torch.cuda.is_available()
-    # use_mps = not args.no_mps and torch.backends.mps.is_available()
+    use_mps = not args.no_mps and torch.backends.mps.is_available()
 
     # set random seed
     if args.seed is not None:
@@ -149,6 +128,8 @@ def main():
     # CUDA settings
     if use_cuda:
         device = torch.device("cuda")
+    elif use_mps:
+        device = torch.device("mps")
     else:
         device = torch.device("cpu")
 
@@ -279,7 +260,7 @@ def main():
             if args.reinit is not None:      
                 # reinit weights if specified
                 if args.reinit == 'random': # random reinit
-                    reinit_state_dict = u.weight_init(model)
+                    u.weight_init(model)
                 elif args.reinit == 'init': # reinit to initial state dict (lottery ticket)
                     reinit_state_dict = initial_state_dict
                 reinitialize_weights(model, masks, reinit_state_dict)
@@ -386,6 +367,7 @@ def train(model, loss_fun, device, train_loader, optimizer, epoch, sr, masks, pr
         # backward pass
         loss.backward()
         if sr: updateBN(model)
+        
         # freeze pruned weights by zeroing out their gradients, if any
         # NOTE: in current version, no need to freeze during struct pruning and masks is None accordingly
         if masks is not None:
@@ -502,6 +484,16 @@ class Scheduler:
             self.lr_update_epochs = args.lr_update_epochs
         else:
             raise NotImplementedError
+
+
+class Timer:
+    def __init__(self):
+        self.start_time = self.t0 = time.time()
+        self.elapsed = 0
+    def accumulate(self):
+        t = time.time()
+        self.elapsed += t - self.t0
+        self.t0 = t
 
 
 

@@ -1,14 +1,13 @@
 from __future__ import print_function
 import os
 import csv
-import shutil
 import torch
 import torchvision.models as models
 from torchvision.models import ResNet18_Weights
 from torchvision import datasets, transforms
-import utils.filters as filters
 import torch.nn.init as init
 import torch.nn as nn
+import filters
 
 # Training
 def train(log_interval, model, criterion, device, train_loader, optimizer, epoch):
@@ -122,7 +121,7 @@ def load_preprocess_data(dataset:str, args) -> datasets:
                            transforms.Pad(4),
                            transforms.RandomCrop(32),
                            transforms.RandomHorizontalFlip(),
-                           transforms.Lambda(lambda x: filters.gaussian_filter(x, args.sigma) if args.filter == 'lowpass' else x),
+                           transforms.Lambda(lambda x: filters.my_gaussian_filter(x, args.sigma) if args.filter == 'lowpass' else x),
                            transforms.Lambda(lambda x: filters.my_gaussian_filter_2(x, 1/args.sigma, args.filter) if args.filter == 'highpass' else x),
                            transforms.ToTensor(),
                            transforms.Lambda(lambda x: torch.where(x > args.sparsity_gt, x, torch.zeros_like(x)) if args.sparsity_gt > 0 else x),
@@ -130,7 +129,7 @@ def load_preprocess_data(dataset:str, args) -> datasets:
                        ])
 
         transform_test=transforms.Compose([
-                           transforms.Lambda(lambda x: filters.gaussian_filter(x, args.sigma) if args.filter == 'lowpass' else x),
+                           transforms.Lambda(lambda x: filters.my_gaussian_filter(x, args.sigma) if args.filter == 'lowpass' else x),
                            transforms.Lambda(lambda x: filters.my_gaussian_filter_2(x, 1/args.sigma, args.filter) if args.filter == 'highpass' else x),
                            transforms.ToTensor(),
                            transforms.Lambda(lambda x: torch.where(x > args.sparsity_gt, x, torch.zeros_like(x)) if args.sparsity_gt > 0 else x),
