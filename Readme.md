@@ -23,15 +23,10 @@ This codebase implements:
 `main.py` contains code to:
 - train a neural network from scratch 
 - prune a trained neural network with:
-	- one-shot channel-wise structured pruning as in [cite] 
+	- one-shot channel-wise structured pruning
 	- one-shot and iterative unstructured pruning 
 
-For the full set of options, run 
-```bash
-python main.py -h
-```
-
-**Main options for this project**
+**Main options**
 - `--pr`: overall pruning ratio (e.g.: 0.5, 0.7, 0.9)
 
 - `--priter`: the number of pruning iterations. 
@@ -56,12 +51,17 @@ python main.py -h
 - `--load <checkpoint_path>`: load model states from `checkpoint_path`. 
 	- If `checkpoint_path` does not contain any, will try to load from the default path to save checkpoints. If does not find, train a model from scratch
 
-## Usage Examples
-### Training - no pruning
+For the full set of options, run 
+```bash
+python main.py -h
+```
+
+# Usage Examples
+## Training - no pruning
 Examples of how to use training parameters. Apply to all pruning cases, but we use no pruning to emphasize the options.
 
 To train without pruning, set # of pruning iterations to 0: `priter=0`
-#### Training and saving
+### Training and saving
 
 **Save checkpoint and log training**
 Train a `resnet20` with bottleneck design from scratch using `cifar10` dataset. Save best checkpoint and training information.
@@ -78,7 +78,7 @@ Save checkpoints at epochs [10, 30, 50, 100]. Two checkpoints saved: the checkpo
 python main.py --priter 0 --save --log-train --model resnet --depth 20 --dataset cifar10 --epochs-save 10 30 50 100
 ```
 
-#### Tweaking hyperparameters
+### Tweaking hyperparameters
 
 **Optimizer tweaking**
 Train default model/dataset from scratch with:
@@ -111,7 +111,7 @@ python main.py --priter 0 --sched 'plateau' --gamma 0.1
 
 - other options please run `python -h`
 
-### Training and one-shot unstructured pruning
+## Training and one-shot unstructured pruning
 Trains model from scratch and perform one-shot pruning at 70% rate. Save checkpoints and training information for all (2) models.
 ```shell
 python main.py --priter 1 --pr 0.7 --save --log-train --prunety 'u'
@@ -122,7 +122,7 @@ Load a pre-trained dense model perform one-shot pruning at 70% rate. Save checkp
 python main.py --priter 1 --pr 0.7 --load 'auto' --save --log-train --prunety 'u'
 ```
 
-### Training and iterative unstructured pruning
+## Training and iterative unstructured pruning
 
 **train from scracth and prune**
 Trains model from scratch and perform iterative pruning at 70% rate with 4 rounds. Save checkpoints and training information for all (5) models.
@@ -152,7 +152,7 @@ python main.py --priter 4 --pr 0.7 --load 'auto' --save --log-train --prunety 'u
 python main.py --priter 4 --pr 0.7 --load 'auto' --save --log-train --prunety 'u' --reinit 'random'
 ```
 
-### Training and structured pruning
+## Training and structured pruning
 Train dense model from scratch and perform one-shot structured pruning at 70%. Save best checkpoints and training logs for all (2) models.
 
 ```bash
