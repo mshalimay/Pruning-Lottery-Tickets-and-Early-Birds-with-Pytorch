@@ -32,6 +32,8 @@ This codebase implements:
 - `--priter`: the number of pruning iterations. 
 	- 0: train dense network only. 1: one-shot pruning.  >1, iterative pruning
 
+- `--prunety`: pruning strategy (`u`= unstructured, `s`=structured)
+
 - `--model`: resnet models:
 	- `resnetb`: with bottleneck design
 	- `resnet`: without bottleneck design
@@ -45,8 +47,6 @@ This codebase implements:
 	- models are saved at `./checkpoints/<.......>`
 
 - `--epochs-save`: save checkpoints at specific epochs
-
-- `--prunety`: pruning strategy (`u`= unstructured, `s`=structured)
 
 - `--load <checkpoint_path>`: load model states from `checkpoint_path`. 
 	- If `checkpoint_path` does not contain any, will try to load from the default path to save checkpoints. If does not find, train a model from scratch
@@ -168,5 +168,6 @@ python main.py --priter 1 --pr 0.7 --save --log-train --prunety 's'
 
 ## Other references
 https://github.com/rahulvigneswaran/Lottery-Ticket-Hypothesis-in-Pytorch
+
 https://github.com/GATECH-EIC/Early-Bird-Tickets
 
