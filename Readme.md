@@ -2,8 +2,8 @@
 
 This codebase implements:
 - Iterative and one-shot unstructured pruning for general models
-- One-shot structured pruning for `ResNet` model variations, following [3](#refences)
-- Lottery-Ticket identification with unstructured pruning, as in [1](#refences)
+- One-shot structured pruning for `ResNet` model variations, following [[3]](#refences).
+- Lottery-Ticket identification with unstructured pruning, as in [[1]](#refences).
   - Including lottery-ticket initialization
 - Lottery-Ticket identification with structured pruning.
 - Early identification of Lottery Tickets (Early-Bird) analysis
